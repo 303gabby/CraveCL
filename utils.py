@@ -37,7 +37,7 @@ def print_recipe_details(recipe_data):
 
     print("\n**Nutritional Information (per serving):**")
     if 'nutrition' in recipe_data and 'nutrients' in recipe_data['nutrition']:
-        # Only show key nutrition facts
+   
         for nutrient in recipe_data['nutrition']['nutrients']:
             if nutrient['name'] in ['Calories', 'Protein', 'Fat', 'Carbohydrates']:
                 print(f"- {nutrient['name']}: {nutrient['amount']}{nutrient['unit']}")
