@@ -4,7 +4,7 @@ import os
 class MealGenerator:
     def __init__(self):
        
-        genai.configure(api_key="AIzaSyCbl0I-naBZ1Ys9VWYVv0TKeRtynxVgUlI")
+        genai.configure(api_key="AIzaSyCf68-vH8X316AbZuJE78oGFcwhtxadVt0")
         self.model = genai.GenerativeModel('gemini-1.5-flash')
 
     def generate_meal_idea(self, budget, mood, tools, time, dietary_restrictions, base_idea=None, variation_prompt=None):
