@@ -15,7 +15,7 @@
   Feeling lazy, tired, or excited? Choose your mood and Crave recommends meals that match your vibe—comfort food, quick bites, or adventurous dishes.
 
 - 📡 **Live Recipe Fetching**  
-  Uses the [Spoonacular API] to get recipes from the internet with ingredients, steps, and cook times.
+  Uses the [Tasty API] to get recipes from the internet with ingredients, steps, and cook times.
 
 - 🤖 **Fallback to AI Recipes**  
   If no match is found or you're offline, Crave auto-generates a recipe using GenAI tailored to your needs and ingredients.
