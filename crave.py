@@ -28,31 +28,31 @@ class CraveCLI:
             self.view_history()
             return
 
-        print("Welcome to Crave! Let's cook something delicious and affordable.")
-        print("\n How it Works")
-        print("\n You will be asked 5 questions: - what your budget is, your mood, kitchen tools available to you, the amount of time you want to spend making your dish and your dietary restrictions.")
-        print("From there we will generate a meal suited to your tastes using the GenAI and Tasty API.") 
-        print("If the suggested meal/dish isn't found on Tasty, have no fear!. Our GenAI will take the lead and generate a recipe for you.We hope you enjoy what we have to offer. Bon Appetit!")
+        print("\nWelcome to Crave! Let's cook something delicious and affordable.")
+        print("\nHow it Works")
+        print("\nYou will be asked 5 questions: - what your budget is, your mood, kitchen tools available to you, the amount of time you want to spend making your dish and your dietary restrictions.")
+        print("\nFrom there we will generate a meal suited to your tastes using the GenAI and Tasty API.") 
+        print("\nIf the suggested meal/dish isn't found on Tasty, have no fear!. Our GenAI will take the lead and generate a recipe for you.We hope you enjoy what we have to offer. Bon Appetit!")
 
-        budget = get_user_input("\n What's your budget? (e.g., $5, $10, $15):")
-        mood = get_user_input("\n What mood are you in? (e.g. comforting, healthy, adventurous):")
-        tools = get_user_input("\n What kitchen tools do you have? (comma-separated, e.g., pan, oven, microwave):").split(',')
-        time = get_user_input("\n How much time do you want to spend cooking?(e.g 5 mins, 10 mins, etc): ").split(',')
-        dietary_restrictions = get_user_input("\n Any dietary restrictions? (comma-separated, e.g., vegetarian, gluten-free):").split(',')
+        budget = get_user_input("\nWhat's your budget? (e.g., $5, $10, $15):")
+        mood = get_user_input("\nWhat mood are you in? (e.g. comforting, healthy, adventurous):")
+        tools = get_user_input("\nWhat kitchen tools do you have? (comma-separated, e.g., pan, oven, microwave):").split(',')
+        time = get_user_input("\nHow much time do you want to spend cooking?(e.g 5 mins, 10 mins, etc): ").split(',')
+        dietary_restrictions = get_user_input("\nAny dietary restrictions? (comma-separated, e.g., vegetarian, gluten-free):").split(',')
 
         print("\nCrafting your personalized meal idea...")
         meal_idea = self.meal_generator.generate_meal_idea(budget, mood, tools, time,  dietary_restrictions)
 
         if not meal_idea:
-            print("Sorry, I couldn't come up with a meal idea based on your input. Please try again with different preferences.")
+            print("\nSorry, I couldn't come up with a meal idea based on your input. Please try again with different preferences.")
             return
 
         print(f"\nHere's a meal idea for you: {meal_idea}")
-        print("Fetching real recipes and details...")
+        print("\nFetching real recipes and details...")
         recipe_data = self.recipe_manager.get_recipe_details(meal_idea, budget, tools, time, dietary_restrictions)
 
         if not recipe_data:
-            print("Couldn't find a suitable recipe from Tasty. Please try a different meal idea or adjust your preferences.")
+            print("\nCouldn't find a suitable recipe from Tasty. Please try a different meal idea or adjust your preferences.")
             return
 
         print_recipe_details(recipe_data)
@@ -101,21 +101,21 @@ class CraveCLI:
                         )
                         print("\nVariation recipe saved to your history!")
                     else:
-                        print("Could not find a recipe for this variation.")
+                        print("\nCould not find a recipe for this variation.")
                 else:
-                    print("Could not generate a variation. Please try again.")
+                    print("\nCould not generate a variation. Please try again.")
             elif choice == 'v':
                 self.view_history()
             elif choice == 'q':
-                print("Thanks for using Crave! Happy cooking!")
+                print("\nThanks for using Crave! Happy cooking!")
                 break
             else:
-                print("Invalid option. Please choose 's', 't', 'v', or 'q'.")
+                print("\nInvalid option. Please choose 's', 't', 'v', or 'q'.")
 
     def view_history(self):
         history = self.db.get_meal_history()
         if not history:
-            print("Your recipe history is empty.")
+            print("\nYour recipe history is empty.")
             return
         print_history(history)
 
