@@ -29,12 +29,16 @@ class CraveCLI:
             return
 
         print("Welcome to Crave! Let's cook something delicious and affordable.")
+        print("\n How it Works")
+        print("\n You will be asked 5 questions: - what your budget is, your mood, kitchen tools available to you, the amount of time you want to spend making your dish and your dietary restrictions.")
+        print("From there we will generate a meal suited to your tastes using the GenAI and Tasty API.") 
+        print("If the suggested meal/dish isn't found on Tasty, have no fear!. Our GenAI will take the lead and generate a recipe for you.We hope you enjoy what we have to offer. Bon Appetit!")
 
-        budget = get_user_input("What's your budget? (e.g., $5, $10, $15): ")
-        mood = get_user_input("What mood are you in? (e.g. comforting, healthy, adventurous): ")
-        tools = get_user_input("What kitchen tools do you have? (comma-separated, e.g., pan, oven, microwave): ").split(',')
-        time = get_user_input("How much time do you want to spend cooking?(e.g 5 mins, 10 mins, etc): ").split(',')
-        dietary_restrictions = get_user_input("Any dietary restrictions? (comma-separated, e.g., vegetarian, gluten-free): ").split(',')
+        budget = get_user_input("\n What's your budget? (e.g., $5, $10, $15):")
+        mood = get_user_input("\n What mood are you in? (e.g. comforting, healthy, adventurous):")
+        tools = get_user_input("\n What kitchen tools do you have? (comma-separated, e.g., pan, oven, microwave):").split(',')
+        time = get_user_input("\n How much time do you want to spend cooking?(e.g 5 mins, 10 mins, etc): ").split(',')
+        dietary_restrictions = get_user_input("\n Any dietary restrictions? (comma-separated, e.g., vegetarian, gluten-free):").split(',')
 
         print("\nCrafting your personalized meal idea...")
         meal_idea = self.meal_generator.generate_meal_idea(budget, mood, tools, time,  dietary_restrictions)
@@ -69,7 +73,7 @@ class CraveCLI:
 
         while True:
             choice = get_user_input(
-                "\nOptions: [s]ave this recipe, [t]ry a variation, [v]iew recipe history, [q]uit: "
+                "\nOptions: save this recipe [enter s], try a variation [enter t], view recipe history[enter v], quit [enter q]: "
             ).lower()
             if choice == 's':
                 print("Recipe already saved!")
@@ -77,7 +81,7 @@ class CraveCLI:
                 new_meal_idea = get_user_input("What kind of variation would you like? (e.g., 'spicier', 'vegetarian version'): ")
                 print("Generating a new variation...")
                 variation_idea = self.meal_generator.generate_meal_idea(
-                    budget, mood, tools, dietary_restrictions, base_idea=meal_idea, variation_prompt=new_meal_idea
+                    budget, mood, tools, time, dietary_restrictions, base_idea=meal_idea, variation_prompt=new_meal_idea
                 )
                 if variation_idea:
                     print(f"\nNew variation idea: {variation_idea}")

@@ -4,17 +4,17 @@ from datetime import datetime
 
 class Database:
     def __init__(self, db_name="budgetbites.db"):
-        self.db_name = db_name # The name of our database file
-        self.conn = None # Connection object
-        self.cursor = None # Cursor object 
-        self._connect() # Connect to the database when the class starts
-        self._create_table() # Make sure the 'meals' table exists
+        self.db_name = db_name 
+        self.conn = None
+        self.cursor = None 
+        self._connect()
+        self._create_table() 
 
     def _connect(self):
         """Establishes a connection to the SQLite database."""
         try:
-            self.conn = sqlite3.connect(self.db_name) # Connects to or creates the database file
-            self.cursor = self.conn.cursor() # Get a cursor to execute commands
+            self.conn = sqlite3.connect(self.db_name) 
+            self.cursor = self.conn.cursor() 
         except sqlite3.Error as e:
             print(f"Error connecting to database: {e}")
 
@@ -31,7 +31,7 @@ class Database:
                         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP 
                     )
                 """)
-                self.conn.commit() # Save the changes to the database
+                self.conn.commit() 
             except sqlite3.Error as e:
                 print(f"Error creating table: {e}")
         else:
@@ -42,12 +42,12 @@ class Database:
         """Saves a meal and its associated data to the database."""
         if self.conn:
             try:
-                # Convert Python dictionaries/lists to JSON text to store in the database
+              
                 user_inputs_json = json.dumps(user_inputs)
                 recipe_data_json = json.dumps(recipe_data)
                 self.cursor.execute(
                     "INSERT INTO meals (meal_idea, user_inputs, recipe_data) VALUES (?, ?, ?)",
-                    (meal_idea, user_inputs_json, recipe_data_json) # Insert data into the table
+                    (meal_idea, user_inputs_json, recipe_data_json) 
                 )
                 self.conn.commit()
             except sqlite3.Error as e:
@@ -59,15 +59,15 @@ class Database:
         """Retrieves all past meals from the database."""
         if self.conn:
             try:
-                # Select all columns from the meals table, ordered by newest first
+                
                 self.cursor.execute("SELECT meal_idea, user_inputs, recipe_data, timestamp FROM meals ORDER BY timestamp DESC")
                 rows = self.cursor.fetchall() # Get all the results
                 history = []
                 for row in rows:
                     history.append({
                         "meal_idea": row[0],
-                        "user_inputs": json.loads(row[1]), # Convert text back to Python dictionary
-                        "recipe_data": json.loads(row[2]), # Convert text back to Python dictionary
+                        "user_inputs": json.loads(row[1]), 
+                        "recipe_data": json.loads(row[2]), 
                         "timestamp": row[3]
                     })
                 return history

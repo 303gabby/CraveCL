@@ -4,14 +4,14 @@ import os
 class MealGenerator:
     def __init__(self):
        
-        genai.configure(api_key="AIzaSyChb6h4vtkkc-maCYtNA7UJ1MhhU9ePasM")
+        genai.configure(api_key="AIzaSyCbl0I-naBZ1Ys9VWYVv0TKeRtynxVgUlI")
         self.model = genai.GenerativeModel('gemini-1.5-flash')
 
     def generate_meal_idea(self, budget, mood, tools, time, dietary_restrictions, base_idea=None, variation_prompt=None):
         """
         Generates a tailored meal idea based on user inputs.
         """
-        # This is the "prompt" we send to the AI. 
+        
         prompt = (
             f"As a culinary assistant for college students, suggest a personalized meal idea "
             f"considering the following:\n"
@@ -36,4 +36,40 @@ class MealGenerator:
         except Exception as e:
             # If something goes wrong, print an error
             print(f"Error generating meal idea with Google GenAI: {e}")
+            return None
+    
+    def generate_full_recipe(self, meal_idea, budget, tools, time, dietary_restrictions):
+        """
+        Generates a full recipe including ingredients, instructions, and cook time
+        for a given meal idea, incorporating budget, tools, and dietary restrictions.
+        """
+        prompt_parts = [
+            "You are a helpful culinary assistant for a college students who experience different situations. Generate a complete recipe.",
+            f"The meal idea is: '{meal_idea}'.",
+            f"The user's budget is: {budget}.",
+            f"Available kitchen tools: {', '.join(tools) if tools else 'None specified'}.",
+            f"The user wants to spend this amount of time in minutes: {time}.",
+            f"Dietary restrictions: {', '.join(dietary_restrictions) if dietary_restrictions else 'None specified'}.",
+            "Please provide the recipe in the following markdown format:",
+            "```",
+            " * Recipe Title: [Name of Meal] *",
+            " Cook Time: [X] minutes",
+            " Servings: [Y]",
+            " Ingredients:",
+            "- [Quantity] [Unit] [Ingredient 1]",
+            "- [Quantity] [Unit] [Ingredient 2]",
+            "- ...",
+            "* Instructions:*",
+            "1. [Step 1]",
+            "2. [Step 2]",
+            "3. ...",
+            "```",
+            "Ensure all sections are present and follow the markdown structure precisely."
+        ]
+
+        try:
+            response2 = self.model.generate_content(prompt_parts)
+            return response2.text.strip()
+        except Exception as e:
+            print(f"Error generating full recipe with GenAI: {e}")
             return None

@@ -1,14 +1,16 @@
 import requests
 import os 
 import json 
+from meal_generator import MealGenerator 
 
 class RecipeManager:
     def __init__(self):
-   
+      
         self.api_key = "e8f840284cmsha965fb8d670029dp1b8bafjsn58931215bd6f" 
         self.api_host = "tasty.p.rapidapi.com"        
 
-        self.base_url = f"https://{self.api_host}/recipes" 
+      
+        self.base_url = f"https://{self.api_host}" 
 
         self.headers = {
             "X-RapidAPI-Host": self.api_host,
@@ -16,13 +18,14 @@ class RecipeManager:
         }
 
        
-      
+        self.meal_generator = MealGenerator() 
 
     def get_recipe_details(self, meal_idea, budget, tools, time, dietary_restrictions):
         """
         Fetches recipe details from Tasty API based on the meal idea and user preferences.
+        If Tasty API fails or returns no results, it falls back to GenAI.
         """
-        search_url = f"https://{self.api_host}/recipes/list"
+        search_url = f"https://{self.api_host}/recipes/list" 
         search_params = {
             "from": "0", 
             "size": "1", 
@@ -31,6 +34,7 @@ class RecipeManager:
 
         print(f"Searching Tasty for: '{meal_idea}'")
 
+        tasty_recipe = None 
         try:
             response = requests.get(search_url, headers=self.headers, params=search_params)
             response.raise_for_status() 
@@ -42,31 +46,52 @@ class RecipeManager:
                 recipe_name = first_result.get('name')
 
                 if recipe_id:
-                    print(f"Found recipe: '{recipe_name}' (ID: {recipe_id}). Fetching details...")
-                    return self._get_recipe_by_id(recipe_id)
+                    print(f"Found recipe: '{recipe_name}' (ID: {recipe_id}). Fetching details from Tasty...")
+                    tasty_recipe = self._get_recipe_by_id(recipe_id)
                 else:
                     print("No ID found for the first recipe result from Tasty.")
-                    return None
             else:
                 print(f"No suitable recipes found on Tasty for '{meal_idea}'.")
-                return None
-
+                    
         except requests.exceptions.RequestException as e:
+            
             if e.response is not None:
                 print(f"Error fetching recipe from Tasty API: {e.response.status_code} - {e.response.text}")
             else:
                 print(f"Error fetching recipe from Tasty API: {e}")
-            return None
         except json.JSONDecodeError as e:
-       
+           
             print(f"Error decoding JSON response from Tasty API: {e}. Raw response: {response.text if 'response' in locals() else 'No response object.'}")
-            return None
+        
+        
+        if tasty_recipe:
+            return tasty_recipe 
+        else:
+           
+            print("Will Generate a recipe based on your needs!")
+            
+            
+            genai_recipe_text = self.meal_generator.generate_full_recipe(
+                meal_idea, budget, tools, time, dietary_restrictions
+            )
+            
+            if genai_recipe_text:
+                print("AI-generated recipe received. Parsing...")
+               
+                parsed_ai_recipe = self._parse_genai_recipe(genai_recipe_text) 
+                
+               
+                return parsed_ai_recipe 
+            else:
+                print("Failed to generate a full recipe from AI.")
+                return None
 
     def _get_recipe_by_id(self, recipe_id):
         """
         Fetches detailed recipe information for a given recipe ID from Tasty API.
         """
-        detail_url = f"https://{self.api_host}/recipes/get-more-info"
+        
+        detail_url = f"https://{self.api_host}/recipes/get-more-info" 
         detail_params = {
             "id": str(recipe_id) 
         }
@@ -93,7 +118,7 @@ class RecipeManager:
 
     def _parse_tasty_recipe(self, tasty_data):
         """
-        Parses the raw JSON data from Tasty API into a consistent format for Crave.
+        Parses the raw JSON data from Tasty API into a consistent dictionary format for Crave.
         """
         parsed_recipe = {
             'title': tasty_data.get('name', 'N/A'),
@@ -103,15 +128,14 @@ class RecipeManager:
             'image': tasty_data.get('thumbnail_url', None),
             'extendedIngredients': [],
             'instructions': '',
-            'nutrition': {'nutrients': []}
+            
         }
 
-        # Ingredients
+        # Ingredients parsing
         if 'sections' in tasty_data:
             for section in tasty_data['sections']:
                 if 'components' in section:
                     for component in section['components']:
-                        
                         ingredient_name = component.get('raw_text', '')
                         if ingredient_name:
                             parsed_recipe['extendedIngredients'].append({
@@ -120,7 +144,7 @@ class RecipeManager:
                                 'unit': ''
                             })
 
-        # Instructions
+        # Instructions parsing
         if 'instructions' in tasty_data:
             steps_list = []
             for i, instruction_step in enumerate(tasty_data['instructions']):
@@ -131,25 +155,86 @@ class RecipeManager:
         else:
             parsed_recipe['instructions'] = "No detailed instructions available."
 
-        # Nutrition
-        if 'nutrition' in tasty_data and tasty_data['nutrition'].get('has_nutrition_info'):
-            nutrition_info = tasty_data['nutrition']
+        
             
-            nutrition_map = {
-                'calories': 'Calories',
-                'protein': 'Protein',
-                'fat': 'Fat',
-                'carbohydrates': 'Carbohydrates',
-                'fiber': 'Fiber',
-                'sugar': 'Sugar'
-            }
-            for tasty_key, display_name in nutrition_map.items():
-                if tasty_key in nutrition_info:
-                    parsed_recipe['nutrition']['nutrients'].append({
-                        'name': display_name,
-                        'amount': nutrition_info[tasty_key],
-                        'unit': 'kcal' if tasty_key == 'calories' else 'g'
-                    })
-
         return parsed_recipe
 
+    def _parse_genai_recipe(self, genai_text):
+        """
+        Parses the markdown-formatted text response from GenAI into a dictionary
+        consistent with the expected recipe structure for Crave.
+        """
+        parsed_recipe = {
+            'title': 'AI Generated Recipe',
+            'servings': 'N/A',
+            'readyInMinutes': 'N/A',
+            'sourceUrl': 'AI Generated',
+            'extendedIngredients': [],
+            'instructions': '',
+            'nutrition': {'nutrients': []}
+        }
+
+        
+
+        lines = genai_text.split('\n')
+        
+        current_section = None
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Identify sections based on common headings
+            if line.startswith("* Recipe Title:"):
+                try:
+                    parsed_recipe['title'] = line.replace("* Recipe Title:", "").replace("*", "").strip()
+                except IndexError:
+                    pass # Keep default title if parsing fails
+                current_section = 'title' # Mark section as done, title is usually first
+            elif line.startswith("Cook Time:"):
+                time_str = line.replace("Cook Time:", "").strip()
+                if "minutes" in time_str.lower():
+                    try:
+                        parsed_recipe['readyInMinutes'] = int(time_str.lower().replace("minutes", "").strip())
+                    except ValueError:
+                        parsed_recipe['readyInMinutes'] = time_str 
+                else:
+                    parsed_recipe['readyInMinutes'] = time_str
+                current_section = 'cook_time'
+            elif line.startswith("Servings:"):
+                parsed_recipe['servings'] = line.replace("Servings:", "").strip()
+                current_section = 'servings'
+            elif line.startswith("Nutritonal Facts:"):
+                nutrition_summary = line.replace("Nutritonal Facts:", "").strip()
+                if nutrition_summary and nutrition_summary != '[Z]': 
+                    parsed_recipe['nutrition']['nutrients'].append({
+                        'name': 'Summary',
+                        'amount': nutrition_summary,
+                        'unit': ''
+                    })
+                current_section = 'nutrition'
+            elif line.startswith("Ingredients:"):
+                current_section = 'ingredients'
+            elif line.startswith("* Instructions:*"): 
+                current_section = 'instructions'
+            elif line.startswith("1."): 
+                if current_section != 'instructions': 
+                    parsed_recipe['instructions'] += line + "\n"
+                    current_section = 'instructions'
+                else: 
+                    parsed_recipe['instructions'] += line + "\n"
+            else: 
+                if current_section == 'ingredients' and line.startswith('- '):
+                    parsed_recipe['extendedIngredients'].append({
+                        'originalName': line[2:].strip(), 
+                        'amount': '', 
+                        'unit': ''
+                    })
+                elif current_section == 'instructions':
+                    
+                    parsed_recipe['instructions'] += line + "\n"
+
+       
+        parsed_recipe['instructions'] = parsed_recipe['instructions'].strip()
+        
+        return parsed_recipe
