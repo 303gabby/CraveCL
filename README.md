@@ -2,7 +2,7 @@
 
 **Crave** is an affordable and personalized smart recipe command-line tool built for students.
 ### More specifically it's designed for *college students📚*
-## ✨ Features
+
 ## ✨ Features
 
 - 💰 **Budget-Based Recipes**  
