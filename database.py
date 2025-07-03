@@ -55,7 +55,7 @@ class Database:
         else:
             print("Database connection not established. Cannot save meal.")
 
-    def get_meal_history(self):
+    def meal_history(self):
         """Retrieves all past meals from the database."""
         if self.conn:
             try:

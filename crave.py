@@ -8,8 +8,8 @@ import os
 class CraveCLI:
     def __init__(self):
         self.db = Database()
-        self.meal_generator = CreateMeal()
-        self.recipe_manager = CreateRecipe()
+        self.meal_suggestion = CreateMeal()
+        self.recipe_creation= CreateRecipe()
         self.parser = self.setup_parser()
 
     def setup_parser(self):
@@ -22,9 +22,9 @@ class CraveCLI:
         return parser
 
 
-    def _handle_new_recipe_generation(self):
+    def recipe_generation(self):
         """
-        Handles the process of asking for user inputs, generating a meal idea,
+        Handles asking for user inputs, generating a meal idea,
         fetching/generating a recipe, displaying it, and saving it.
         Returns True if a recipe was successfully generated and displayed, False otherwise.
         """
@@ -35,7 +35,7 @@ class CraveCLI:
         dietary_restrictions = get_user_input("\nAny dietary restrictions? (comma-separated, e.g., vegetarian, gluten-free):").split(',')
 
         print("\nCrafting your personalized meal idea...")
-        meal_idea = self.meal_generator.generate_meal_idea(budget, mood, tools, time,  dietary_restrictions)
+        meal_idea = self.meal_suggestion.create_meal(budget, mood, tools, time,  dietary_restrictions)
 
         if not meal_idea:
             print("\nSorry, I couldn't come up with a meal idea based on your input. Please try again with different preferences.")
@@ -43,7 +43,7 @@ class CraveCLI:
 
         print(f"\nHere's a meal idea for you: {meal_idea}")
         print("\nFetching real recipes and details...")
-        recipe_data = self.recipe_manager.get_recipe_details(meal_idea, budget, tools, time, dietary_restrictions)
+        recipe_data = self.recipe_creation.req_recipe_details(meal_idea, budget, tools, time, dietary_restrictions)
 
         if not recipe_data:
             print("\nCouldn't find a suitable recipe. Please try a different meal idea or adjust your preferences.")
@@ -87,7 +87,7 @@ class CraveCLI:
 
             if initial_choice == 'n':
               
-                recipe_success, meal_idea, budget, mood, tools, time, dietary_restrictions, recipe_data = self._handle_new_recipe_generation()
+                recipe_success, meal_idea, budget, mood, tools, time, dietary_restrictions, recipe_data = self.recipe_generation()
 
                 # If a recipe was successfully generated, then show the post-recipe options
                 if recipe_success:
@@ -101,13 +101,13 @@ class CraveCLI:
                         elif choice == 't':
                             new_meal_idea = get_user_input("What kind of variation would you like? (e.g., 'spicier', 'vegetarian version'): ")
                             print("Generating a new variation...")
-                            variation_idea = self.meal_generator.generate_meal_idea(
+                            variation_idea = self.meal_suggestion.create_meal(
                                 budget, mood, tools, time, dietary_restrictions, base_idea=meal_idea, variation_prompt=new_meal_idea
                             )
                             if variation_idea:
                                 print(f"\nNew variation idea: {variation_idea}")
                               
-                                variation_recipe_data = self.recipe_manager.get_recipe_details(variation_idea, budget, tools, time, dietary_restrictions)
+                                variation_recipe_data = self.recipe_creation.req_recipe_details(variation_idea, budget, tools, time, dietary_restrictions)
                                 if variation_recipe_data:
                                     print_recipe_details(variation_recipe_data)
                                     self.db.save_meal(
@@ -148,7 +148,7 @@ class CraveCLI:
         
 
     def view_history(self):
-        history = self.db.get_meal_history()
+        history = self.db.meal_history()
         if not history:
             print("\nYour recipe history is empty.")
             return

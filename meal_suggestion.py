@@ -7,7 +7,7 @@ class CreateMeal:
         genai.configure(api_key="AIzaSyCf68-vH8X316AbZuJE78oGFcwhtxadVt0")
         self.model = genai.GenerativeModel('gemini-1.5-flash')
 
-    def generate_meal_idea(self, budget, mood, tools, time, dietary_restrictions, base_idea=None, variation_prompt=None):
+    def create_meal(self, budget, mood, tools, time, dietary_restrictions, base_idea=None, variation_prompt=None):
         """
         Generates a tailored meal idea based on user inputs.
         """
@@ -38,7 +38,7 @@ class CreateMeal:
             print(f"Error generating meal idea with Google GenAI: {e}")
             return None
     
-    def generate_full_recipe(self, meal_idea, budget, tools, time, dietary_restrictions):
+    def create_whole_recipe(self, meal_idea, budget, tools, time, dietary_restrictions):
         """
         Generates a full recipe including ingredients, instructions, and cook time
         for a given meal idea, incorporating budget, tools, and dietary restrictions.
