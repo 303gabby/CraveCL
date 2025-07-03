@@ -27,7 +27,7 @@ def print_recipe_details(recipe_data):
     print("\n**Instructions:**")
     if 'instructions' in recipe_data and recipe_data['instructions']:
         print(recipe_data['instructions'])
-    # Sometimes instructions are in a different format, so we check both
+   
     elif 'analyzedInstructions' in recipe_data and recipe_data['analyzedInstructions']:
         for instruction_set in recipe_data['analyzedInstructions']:
             for step in instruction_set.get('steps', []):

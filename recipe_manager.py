@@ -189,8 +189,8 @@ class RecipeManager:
                 try:
                     parsed_recipe['title'] = line.replace("* Recipe Title:", "").replace("*", "").strip()
                 except IndexError:
-                    pass # Keep default title if parsing fails
-                current_section = 'title' # Mark section as done, title is usually first
+                    pass 
+                current_section = 'title' 
             elif line.startswith("Cook Time:"):
                 time_str = line.replace("Cook Time:", "").strip()
                 if "minutes" in time_str.lower():

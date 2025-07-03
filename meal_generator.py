@@ -30,11 +30,11 @@ class MealGenerator:
         try:
             # Send the prompt to the AI and get a response
             response = self.model.generate_content(prompt)
-            # We just want the text part of the AI's answer
+            
             meal_idea = response.text.strip()
             return meal_idea
         except Exception as e:
-            # If something goes wrong, print an error
+          
             print(f"Error generating meal idea with Google GenAI: {e}")
             return None
     
