@@ -74,11 +74,11 @@ class CraveCLI:
             self.view_history()
             return
 
-        print("\nWelcome to Crave! Let's cook something delicious and affordable.")
+        print("\nWelcome to Crave! Let's cook something delicious and affordable. ✨")
         print("\nHow it Works")
         print("\nYou will be asked 5 questions: - what your budget is, your mood, kitchen tools available to you, the amount of time you want to spend making your dish and your dietary restrictions.")
         print("\nFrom there we will generate a meal suited to your tastes using the GenAI and Tasty API.") 
-        print("\nIf the suggested meal/dish isn't found on Tasty, have no fear!. Our GenAI will take the lead and generate a recipe for you.We hope you enjoy what we have to offer. \n Bon Appetit!")
+        print("\nIf the suggested meal/dish isn't found on Tasty, have no fear!. Our GenAI will take the lead and generate a recipe for you.We hope you enjoy what we have to offer. \nBon Appetit!")
 
         while True:
             initial_choice = get_user_input(
