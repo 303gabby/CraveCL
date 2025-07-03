@@ -1,9 +1,9 @@
 import requests
 import os 
 import json 
-from meal_generator import MealGenerator 
+from meal_suggestion import CreateMeal
 
-class RecipeManager:
+class CreateRecipe:
     def __init__(self):
       
         self.api_key = "e8f840284cmsha965fb8d670029dp1b8bafjsn58931215bd6f" 
@@ -18,7 +18,7 @@ class RecipeManager:
         }
 
        
-        self.meal_generator = MealGenerator() 
+        self.meal_generator = CreateMeal() 
 
     def get_recipe_details(self, meal_idea, budget, tools, time, dietary_restrictions):
         """

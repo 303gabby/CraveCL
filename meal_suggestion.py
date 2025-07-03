@@ -1,7 +1,7 @@
 import google.generativeai as genai 
 import os 
 
-class MealGenerator:
+class CreateMeal:
     def __init__(self):
        
         genai.configure(api_key="AIzaSyCf68-vH8X316AbZuJE78oGFcwhtxadVt0")

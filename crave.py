@@ -1,6 +1,6 @@
 import argparse
-from meal_generator import MealGenerator
-from recipe_manager import RecipeManager
+from meal_suggestion import CreateMeal
+from recipe_creation import CreateRecipe
 from database import Database
 from utils import get_user_input, print_recipe_details, print_history
 import os
@@ -8,8 +8,8 @@ import os
 class CraveCLI:
     def __init__(self):
         self.db = Database()
-        self.meal_generator = MealGenerator()
-        self.recipe_manager = RecipeManager()
+        self.meal_generator = CreateMeal()
+        self.recipe_manager = CreateRecipe()
         self.parser = self.setup_parser()
 
     def setup_parser(self):

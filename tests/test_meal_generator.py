@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from meal_generator import MealGenerator
+from meal_suggestion import CreateMeal
 
-class TestMealGenerator(unittest.TestCase):
+class TestCreateMeal(unittest.TestCase):
     
     # Test 1: generate_meal_idea returns a meal name
     @patch("meal_generator.genai.GenerativeModel")
@@ -11,7 +11,7 @@ class TestMealGenerator(unittest.TestCase):
         fake_response.text = "Mac and Cheese"
         mock_model.return_value.generate_content.return_value = fake_response
 
-        gen = MealGenerator()
+        gen = CreateMeal()
         result = gen.generate_meal_idea(
             budget="$5",
             mood="comforting",
@@ -29,7 +29,7 @@ class TestMealGenerator(unittest.TestCase):
         fake_response.text = "Here is your recipe..."
         mock_model.return_value.generate_content.return_value = fake_response
 
-        gen = MealGenerator()
+        gen = CreateMeal()
         result = gen.generate_full_recipe(
             meal_idea="Mac and Cheese",
             budget="$5",
@@ -40,14 +40,14 @@ class TestMealGenerator(unittest.TestCase):
 
         self.assertEqual(result, "Here is your recipe...")
 
-    # Test 3: test with a different idea
+ 
     @patch("meal_generator.genai.GenerativeModel")
     def test_generate_meal_with_variation(self, mock_model):
         fake_response = MagicMock()
         fake_response.text = "Spicy Mac and Cheese"
         mock_model.return_value.generate_content.return_value = fake_response
 
-        gen = MealGenerator()
+        gen = CreateMeal()
         result = gen.generate_meal_idea(
             budget="$5",
             mood="spicy",

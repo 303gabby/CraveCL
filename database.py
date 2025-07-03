@@ -3,7 +3,7 @@ import json
 from datetime import datetime 
 
 class Database:
-    def __init__(self, db_name="budgetbites.db"):
+    def __init__(self, db_name="crave.db"):
         self.db_name = db_name 
         self.conn = None
         self.cursor = None 
